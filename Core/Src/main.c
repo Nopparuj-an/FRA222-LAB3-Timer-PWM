@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -31,6 +31,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+#define IC_BUFFER_SIZE 20
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -46,6 +49,10 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+uint32_t InputCaptureBuffer[IC_BUFFER_SIZE];
+float averageRisingedgePeriod;
+float RPM;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -55,6 +62,8 @@ static void MX_DMA_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
+
+float IC_Calc_Period();
 
 /* USER CODE END PFP */
 
@@ -96,16 +105,25 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
+	HAL_TIM_Base_Start(&htim2);
+	HAL_TIM_IC_Start_DMA(&htim2, TIM_CHANNEL_1, InputCaptureBuffer,
+	IC_BUFFER_SIZE);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+	while (1) {
+		static uint32_t timestamp = 0;
+		if (HAL_GetTick() >= timestamp) {
+			timestamp = HAL_GetTick() + 5;
+			averageRisingedgePeriod = IC_Calc_Period();
+			RPM = (1000000.0 / averageRisingedgePeriod) * 60.0 / (12.0 * 64.0);
+		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+	}
   /* USER CODE END 3 */
 }
 
@@ -297,6 +315,27 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+float IC_Calc_Period() {
+	uint32_t currentDMAPointer = IC_BUFFER_SIZE
+			- __HAL_DMA_GET_COUNTER(htim2.hdma[1]);
+
+	uint32_t lastValidDMAPointer = (currentDMAPointer - 1 + IC_BUFFER_SIZE)
+			% IC_BUFFER_SIZE;
+
+	uint32_t i = (lastValidDMAPointer + IC_BUFFER_SIZE - 5) % IC_BUFFER_SIZE;
+
+	int32_t sumdiff = 0;
+	while (i != lastValidDMAPointer) {
+		uint32_t firstCapture = InputCaptureBuffer[i];
+
+		uint32_t NextCapture = InputCaptureBuffer[(i + 1) % IC_BUFFER_SIZE];
+		sumdiff += NextCapture - firstCapture;
+		i = (i + 1) % IC_BUFFER_SIZE;
+	}
+
+	return sumdiff / 5.0;
+}
+
 /* USER CODE END 4 */
 
 /**
@@ -306,11 +345,10 @@ static void MX_GPIO_Init(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+	/* User can add his own implementation to report the HAL error return state */
+	__disable_irq();
+	while (1) {
+	}
   /* USER CODE END Error_Handler_Debug */
 }
 

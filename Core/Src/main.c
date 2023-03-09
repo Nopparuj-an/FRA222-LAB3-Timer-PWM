@@ -52,8 +52,8 @@ UART_HandleTypeDef huart2;
 
 uint32_t InputCaptureBuffer[IC_BUFFER_SIZE];
 float averageRisingedgePeriod;
-float RPM;
-uint32_t duty = 50;
+float MotorReadRPM;
+uint32_t MotorSetDuty = 50;
 
 /* USER CODE END PV */
 
@@ -124,8 +124,8 @@ int main(void)
 		if (HAL_GetTick() >= timestamp) {
 			timestamp = HAL_GetTick() + 5;
 			averageRisingedgePeriod = IC_Calc_Period();
-			RPM = (1000000.0 / averageRisingedgePeriod) * 60.0 / (12.0 * 64.0);
-			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, duty);
+			MotorReadRPM = (1000000.0 / averageRisingedgePeriod) * 60.0 / (12.0 * 64.0);
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, MotorSetDuty);
 		}
     /* USER CODE END WHILE */
 

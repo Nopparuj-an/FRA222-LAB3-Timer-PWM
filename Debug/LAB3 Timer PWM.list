@@ -29,21 +29,21 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
  12 .debug_info   0000d2aa  00000000  00000000  00020040  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00001b24  00000000  00000000  0002d2ea  2**0
+ 13 .debug_abbrev 00001b11  00000000  00000000  0002d2ea  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000c10  00000000  00000000  0002ee10  2**3
+ 14 .debug_aranges 00000c10  00000000  00000000  0002ee00  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 00000b78  00000000  00000000  0002fa20  2**3
+ 15 .debug_ranges 00000b78  00000000  00000000  0002fa10  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0001575f  00000000  00000000  00030598  2**0
+ 16 .debug_macro  0001575f  00000000  00000000  00030588  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0000d5b3  00000000  00000000  00045cf7  2**0
+ 17 .debug_line   0000d5b3  00000000  00000000  00045ce7  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0008a1d4  00000000  00000000  000532aa  2**0
+ 18 .debug_str    0008a1e9  00000000  00000000  0005329a  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  000dd47e  2**0
+ 19 .comment      00000050  00000000  00000000  000dd483  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00003420  00000000  00000000  000dd4d0  2**2
+ 20 .debug_frame  00003420  00000000  00000000  000dd4d4  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1106,7 +1106,7 @@ int main(void)
  8000d76:	eef0 7a40 	vmov.f32	s15, s0
  8000d7a:	4b1f      	ldr	r3, [pc, #124]	; (8000df8 <main+0xe0>)
  8000d7c:	edc3 7a00 	vstr	s15, [r3]
-			RPM = (1000000.0 / averageRisingedgePeriod) * 60.0 / (12.0 * 64.0);
+			MotorReadRPM = (1000000.0 / averageRisingedgePeriod) * 60.0 / (12.0 * 64.0);
  8000d80:	4b1d      	ldr	r3, [pc, #116]	; (8000df8 <main+0xe0>)
  8000d82:	681b      	ldr	r3, [r3, #0]
  8000d84:	4618      	mov	r0, r3
@@ -1138,7 +1138,7 @@ int main(void)
  8000dc8:	4603      	mov	r3, r0
  8000dca:	4a0e      	ldr	r2, [pc, #56]	; (8000e04 <main+0xec>)
  8000dcc:	6013      	str	r3, [r2, #0]
-			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, duty);
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, MotorSetDuty);
  8000dce:	4b08      	ldr	r3, [pc, #32]	; (8000df0 <main+0xd8>)
  8000dd0:	681b      	ldr	r3, [r3, #0]
  8000dd2:	4a0d      	ldr	r2, [pc, #52]	; (8000e08 <main+0xf0>)

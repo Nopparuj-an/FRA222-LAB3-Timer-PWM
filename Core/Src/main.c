@@ -57,8 +57,8 @@ uint32_t MotorSetDuty = 50;
 
 uint8_t MotorControlEnable = 0;
 uint8_t MotorSetRPM = 10;
-float Kp = 20;
-float Ki = 1;
+float Kp = 25;
+float Ki = 5;
 
 /* USER CODE END PV */
 

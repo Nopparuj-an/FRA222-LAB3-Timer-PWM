@@ -57,8 +57,8 @@ uint32_t MotorSetDuty = 50;
 
 uint8_t MotorControlEnable = 0;
 uint8_t MotorSetRPM = 10;
-float Kp = 25;
-float Ki = 5;
+float Kp = 30;
+float Ki = 10;
 
 /* USER CODE END PV */
 
@@ -137,8 +137,7 @@ int main(void)
 				float error = MotorSetRPM - MotorReadRPM;
 				float proportional = Kp * error;
 
-				static uint32_t lastTime = 0;
-				float dt = (HAL_GetTick() - lastTime) / 1000.0;
+				float dt = 0.001;
 
 				static float cumError = 0;
 				cumError += error * dt;
@@ -146,11 +145,11 @@ int main(void)
 				float output = proportional + (Ki * cumError);
 				if (output < 0) {
 					output = 0;
+					cumError = 0;
 				} else if (output > 100) {
 					output = 100;
 				}
 				MotorSetDuty = output;
-				lastTime = HAL_GetTick();
 			}
 		}
 
